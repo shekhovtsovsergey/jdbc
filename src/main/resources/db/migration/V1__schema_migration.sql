@@ -1,0 +1,10 @@
+DROP TABLE IF EXISTS PRODUCTS;
+
+CREATE TABLE PRODUCTS
+(
+    ID             BIGSERIAL        PRIMARY KEY,
+    NAME           VARCHAR(255)     NOT NULL,
+    CATEGORY       VARCHAR(255)     NOT NULL,
+    COST           NUMERIC(10, 2)   NOT NULL,
+    QUANTITY       INTEGER          NOT NULL
+);
