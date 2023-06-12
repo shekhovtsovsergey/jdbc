@@ -21,6 +21,6 @@ VALUES ('Budweiser', 1, 2.5, 100),
        ('Lemonade', 5, 3.0, 150),
        ('Iced Tea', 5, 3.5, 120);
 
-select * from CATEGORIES;
-select * from PRODUCTS;
+SELECT * FROM CATEGORIES;
+SELECT * FROM PRODUCTS;
 

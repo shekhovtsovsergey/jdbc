@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS PRODUCTS;
 CREATE TABLE CATEGORIES (
                             ID BIGSERIAL PRIMARY KEY,
                             NAME VARCHAR(255) UNIQUE
