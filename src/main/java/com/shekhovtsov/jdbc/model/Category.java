@@ -1,22 +1,18 @@
 package com.shekhovtsov.jdbc.model;
 
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.math.BigDecimal;
-
+@ToString
 @Getter
 @Setter
 @Builder
-@ToString
-public class Product {
+public class Category {
 
     private Long id;
     private String name;
-    private Category category;
-    private BigDecimal cost;
-    private int quantity;
 
 }

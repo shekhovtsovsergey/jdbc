@@ -1,5 +1,6 @@
 package com.shekhovtsov.jdbc.dao;
 
+import com.shekhovtsov.jdbc.model.Category;
 import com.shekhovtsov.jdbc.model.Product;
 
 import java.io.IOException;
@@ -8,9 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
 public class ProductJdbcDao implements ProductDao {
@@ -22,20 +21,28 @@ public class ProductJdbcDao implements ProductDao {
         this.jdbcUtils = jdbcUtils;
     }
 
+
     @Override
     public List<Product> findAll() {
         Connection connection = null;
 
-        Set<Product> result = new HashSet<>();
+        List<Product> result = new ArrayList<>();
 
         try {
             connection = jdbcUtils.getConnection();
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM PRODUCTS");
+            PreparedStatement statement = connection.prepareStatement("SELECT p.*, c.NAME as CATEGORY_NAME, c.ID as CATEGORY_ID FROM PRODUCTS p LEFT JOIN CATEGORIES c ON p.CATEGORY_ID = c.ID");
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                final Product product = Product.builder()
+                Category category = Category.builder()
+                        .id(resultSet.getLong("CATEGORY_ID"))
+                        .name(resultSet.getString("CATEGORY_NAME"))
+                        .build();
+                Product product = Product.builder()
                         .id(resultSet.getLong("id"))
                         .name(resultSet.getString("name"))
+                        .category(category != null && category.getId() != null ? category : null)
+                        .cost(resultSet.getBigDecimal("cost"))
+                        .quantity(resultSet.getInt("quantity"))
                         .build();
                 result.add(product);
             }
@@ -46,7 +53,7 @@ public class ProductJdbcDao implements ProductDao {
         } finally {
             jdbcUtils.closeConnection(connection);
         }
-        return new ArrayList<>(result);
+        return result;
     }
 
 
@@ -56,13 +63,20 @@ public class ProductJdbcDao implements ProductDao {
 
         try {
             connection = jdbcUtils.getConnection();
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM PRODUCTS WHERE ID=?");
+            PreparedStatement statement = connection.prepareStatement("SELECT p.*, c.NAME as CATEGORY_NAME, c.ID as CATEGORY_ID FROM PRODUCTS p JOIN CATEGORIES c ON p.CATEGORY_ID = c.ID WHERE p.ID=?");
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
+                Category category = Category.builder()
+                        .id(resultSet.getLong("category_id"))
+                        .name(resultSet.getString("category_name"))
+                        .build();
                 return Product.builder()
                         .id(resultSet.getLong("id"))
                         .name(resultSet.getString("name"))
+                        .category(category)
+                        .cost(resultSet.getBigDecimal("cost"))
+                        .quantity(resultSet.getInt("quantity"))
                         .build();
             }
             statement.close();
@@ -73,6 +87,8 @@ public class ProductJdbcDao implements ProductDao {
         }
         return null;
     }
+
+
 
     @Override
     public String findNameById(Long id) {
@@ -95,14 +111,18 @@ public class ProductJdbcDao implements ProductDao {
         return null;
     }
 
+
     @Override
     public void insert(Product product) {
         Connection connection = null;
 
         try {
             connection = jdbcUtils.getConnection();
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO PRODUCTS (NAME) VALUES (?)");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO PRODUCTS (NAME,CATEGORY_ID,COST,QUANTITY) VALUES (?,?,?,?)");
             statement.setString(1, product.getName());
+            statement.setLong(2, product.getCategory().getId());
+            statement.setBigDecimal(3, product.getCost());
+            statement.setInt(4, product.getQuantity());
             statement.executeUpdate();
             statement.close();
         } catch (SQLException | IOException e) {
@@ -118,9 +138,11 @@ public class ProductJdbcDao implements ProductDao {
 
         try {
             connection = jdbcUtils.getConnection();
-            PreparedStatement statement = connection.prepareStatement("UPDATE PRODUCTS SET NAME=? WHERE ID=?");
+            PreparedStatement statement = connection.prepareStatement("UPDATE PRODUCTS SET NAME=?, CATEGORY_ID=? WHERE ID=?");
             statement.setString(1, product.getName());
-            statement.setLong(2, product.getId());
+            statement.setLong(2, product.getCategory().getId());
+            statement.setLong(3, product.getId());
+
             statement.executeUpdate();
             statement.close();
         } catch (SQLException | IOException e) {
@@ -129,6 +151,7 @@ public class ProductJdbcDao implements ProductDao {
             jdbcUtils.closeConnection(connection);
         }
     }
+
 
     @Override
     public void deleteById(Long id) {
