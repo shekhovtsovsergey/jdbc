@@ -5,6 +5,7 @@ import com.shekhovtsov.jdbc.exception.CategoryNotFoundException;
 import com.shekhovtsov.jdbc.model.Category;
 
 import java.util.List;
+import java.util.Optional;
 
 public class CategoryServiceImpl implements CategoryService {
 
@@ -15,7 +16,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> findAll() {
+    public List<Category> findAll() throws CategoryNotFoundException {
         return categoryDao.findAll();
     }
 
@@ -25,22 +26,22 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category findNameById(Long id) throws CategoryNotFoundException {
-        return categoryDao.findNameById(id).orElseThrow(() -> new CategoryNotFoundException(id));
+    public Optional<Category> findNameById(Long id) throws CategoryNotFoundException {
+        return (Optional<Category>) categoryDao.findNameById(id).orElseThrow(() -> new CategoryNotFoundException(id));
     }
 
     @Override
-    public void insert(Category category) {
+    public void insert(Category category) throws CategoryNotFoundException {
         categoryDao.insert(category);
     }
 
     @Override
-    public void update(Category category) {
+    public void update(Category category) throws CategoryNotFoundException {
         categoryDao.update(category);
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(Long id) throws CategoryNotFoundException {
         categoryDao.deleteById(id);
     }
 }

@@ -132,12 +132,19 @@ public class ProductJdbcDao implements ProductDao {
         Connection connection = null;
         try {
             connection = jdbcUtils.getConnection();
-            PreparedStatement statement = connection.prepareStatement("UPDATE PRODUCTS SET NAME=?, CATEGORY_ID=? WHERE ID=?");
+            PreparedStatement statement = connection.prepareStatement("UPDATE PRODUCTS SET NAME=?, CATEGORY_ID=?, COST=?, QUANTITY=? WHERE ID=?");
             statement.setString(1, product.getName());
             statement.setLong(2, product.getCategory().getId());
-            statement.setLong(3, product.getId());
+            statement.setBigDecimal(3, product.getCost());
+            statement.setInt(4, product.getQuantity());
+            statement.setLong(5, product.getId());
 
-            statement.executeUpdate();
+            int rowsUpdated = statement.executeUpdate();
+
+            if (rowsUpdated == 0) {
+                throw new ProductNotFoundException("Product not found!");
+            }
+
             statement.close();
         } catch (SQLException | IOException e) {
             throw new ProductNotFoundException("Error while updating product: " + e.getMessage());

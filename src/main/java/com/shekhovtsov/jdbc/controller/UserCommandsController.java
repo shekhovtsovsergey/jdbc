@@ -1,43 +1,24 @@
 package com.shekhovtsov.jdbc.controller;
 
 import com.shekhovtsov.jdbc.dto.ProductDto;
-import com.shekhovtsov.jdbc.model.Category;
-import com.shekhovtsov.jdbc.model.Product;
+import com.shekhovtsov.jdbc.exception.CategoryNotFoundException;
+import com.shekhovtsov.jdbc.exception.ProductNotFoundException;
 import com.shekhovtsov.jdbc.service.ProductService;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
-public class UserCommands {
+public class UserCommandsController {
 
     private ProductService productService;
 
-    public UserCommands(ProductService productService) {
+    public UserCommandsController(ProductService productService) {
         this.productService = productService;
     }
 
-    public void play() {
-        Category category = Category.builder()
-                .id(1l)
-                .name("Новая")
-                .build();
-
-        ProductDto productDto = ProductDto.builder()
-                .name("Product")
-                .category(1L)
-                .cost(BigDecimal.valueOf(100))
-                .quantity(100)
-                .build();
-
-        Product productFromDb = Product.builder()
-                .id(1L)
-                .name("Product")
-                .category(category)
-                .cost(BigDecimal.valueOf(100))
-                .quantity(100)
-                .build();
-
+    public void play() throws ProductNotFoundException, CategoryNotFoundException {
         System.out.println("Здравствуйте, добро пожаловать в интернет магазин");
         Scanner scanner = new Scanner(System.in);
         String command = "";
@@ -59,30 +40,62 @@ public class UserCommands {
                     break;
                 case "1":
                     System.out.println("Список всех товаров: ");
-                    List<Product> products = productService.findAll();
-                    for (Product p : products) {
+                    List<ProductDto> products = productService.findAll();
+                    for (ProductDto p : products) {
                         System.out.println(p);
                     }
                     break;
                 case "2":
                     System.out.println("Товар по ID: ");
-                    Product productById = productService.findById(1L);
+                    ProductDto productById = productService.findById(1L);
                     System.out.println(productById);
                     break;
                 case "3":
                     System.out.println("Наименование товара по ID: ");
-                    String productNameById = productService.findNameById(1L);
+                    Optional<String> productNameById = productService.findNameById(1L);
                     System.out.println(productNameById);
                     break;
                 case "4":
                     System.out.println("Добавление нового товара: ");
-                    productService.insert(productDto);
+                    System.out.println("Введите название товара: ");
+                    String name = scanner.nextLine();
+                    System.out.println("Введите категорию товара (ID): ");
+                    Long category = scanner.nextLong();
+                    System.out.println("Введите стоимость товара: ");
+                    BigDecimal cost = scanner.nextBigDecimal();
+                    System.out.println("Введите количество товара: ");
+                    int quantity = scanner.nextInt();
+                    ProductDto newProductDto = ProductDto.builder()
+                            .name(name)
+                            .category(category)
+                            .cost(cost)
+                            .quantity(quantity)
+                            .build();
+                    productService.insert(newProductDto);
                     System.out.println("Добавлен");
+                    scanner.nextLine();
                     break;
                 case "5":
                     System.out.println("Обновление товара: ");
-                    productService.update(productFromDb);
+                    System.out.println("Введите ID товара, который нужно обновить: ");
+                    Long id = scanner.nextLong();
+                    scanner.nextLine();
+                    ProductDto updatedProductDto = ProductDto.builder()
+                            .id(id)
+                            .name("")
+                            .category(1L)
+                            .cost(BigDecimal.ZERO)
+                            .quantity(0)
+                            .build();
+                    System.out.println("Введите новое название товара: ");
+                    updatedProductDto.setName(scanner.nextLine());
+                    System.out.println("Введите новую цену товара: ");
+                    updatedProductDto.setCost(scanner.nextBigDecimal());
+                    System.out.println("Введите новое количество товара: ");
+                    updatedProductDto.setQuantity(scanner.nextInt());
+                    productService.update(updatedProductDto);
                     System.out.println("Обновлен");
+                    scanner.nextLine();
                     break;
                 case "6":
                     System.out.println("Удаление товара: ");

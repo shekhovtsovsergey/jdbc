@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 @Builder
 @ToString
 public class Product {
-
     private Long id;
     private String name;
     private Category category;

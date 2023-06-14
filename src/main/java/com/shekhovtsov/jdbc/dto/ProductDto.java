@@ -1,9 +1,9 @@
 package com.shekhovtsov.jdbc.dto;
 
-import com.shekhovtsov.jdbc.model.Category;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 
@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Builder
+@ToString
 public class ProductDto {
     private Long id;
     private String name;
