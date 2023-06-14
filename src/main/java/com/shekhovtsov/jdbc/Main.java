@@ -31,13 +31,14 @@ public class Main {
         CategoryConverter categoryConverter = new CategoryConverter();
         ProductService productService = new ProductServiceImpl(productDao, categoryService, productConverter);
         UserCommandsController userCommandsController = new UserCommandsController(productService);
+        userCommandsController.play();
 
-        try {
+        /*try {
             userCommandsController.play();
         } catch (ProductNotFoundException e) {
             System.out.println("Product not found!" + e);
         } catch (CategoryNotFoundException e) {
             System.out.println("Product not found!" + e);
-        }
+        }*/
     }
 }

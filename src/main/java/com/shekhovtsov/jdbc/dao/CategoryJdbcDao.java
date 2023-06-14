@@ -65,7 +65,7 @@ public class CategoryJdbcDao implements CategoryDao {
         } finally {
             jdbcUtils.closeConnection(connection);
         }
-        return null;
+        throw new CategoryNotFoundException("Category with id " + id + " not found.");
     }
 
     @Override
@@ -78,14 +78,14 @@ public class CategoryJdbcDao implements CategoryDao {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return Optional.ofNullable(resultSet.getString("name"));
+            } else {
+                throw new CategoryNotFoundException("Category not found for id: " + id);
             }
-            statement.close();
         } catch (SQLException | IOException e) {
             throw new CategoryNotFoundException("Error while finding name by id: " + id + e);
         } finally {
             jdbcUtils.closeConnection(connection);
         }
-        return null;
     }
 
     @Override
