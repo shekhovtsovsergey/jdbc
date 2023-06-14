@@ -1,5 +1,6 @@
 package com.shekhovtsov.jdbc.dao;
 
+import com.shekhovtsov.jdbc.exception.ProductNotFoundException;
 import com.shekhovtsov.jdbc.model.Category;
 import com.shekhovtsov.jdbc.model.Product;
 
@@ -10,24 +11,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 public class ProductJdbcDao implements ProductDao {
 
     private JdbcUtils jdbcUtils;
 
-
     public ProductJdbcDao(JdbcUtils jdbcUtils) {
         this.jdbcUtils = jdbcUtils;
     }
 
-
     @Override
-    public List<Product> findAll() {
+    public List<Product> findAll() throws ProductNotFoundException {
         Connection connection = null;
-
         List<Product> result = new ArrayList<>();
-
         try {
             connection = jdbcUtils.getConnection();
             PreparedStatement statement = connection.prepareStatement("SELECT p.*, c.NAME as CATEGORY_NAME, c.ID as CATEGORY_ID FROM PRODUCTS p LEFT JOIN CATEGORIES c ON p.CATEGORY_ID = c.ID");
@@ -49,18 +47,19 @@ public class ProductJdbcDao implements ProductDao {
             statement.close();
 
         } catch (SQLException | IOException e) {
-            e.printStackTrace();
+            throw new ProductNotFoundException("Failed to find products" + e);
         } finally {
             jdbcUtils.closeConnection(connection);
+        }
+        if (result.isEmpty()) {
+            throw new ProductNotFoundException("No products found");
         }
         return result;
     }
 
-
     @Override
-    public Product findById(Long id) {
+    public Optional<Product> findById(Long id) throws ProductNotFoundException {
         Connection connection = null;
-
         try {
             connection = jdbcUtils.getConnection();
             PreparedStatement statement = connection.prepareStatement("SELECT p.*, c.NAME as CATEGORY_NAME, c.ID as CATEGORY_ID FROM PRODUCTS p JOIN CATEGORIES c ON p.CATEGORY_ID = c.ID WHERE p.ID=?");
@@ -71,51 +70,47 @@ public class ProductJdbcDao implements ProductDao {
                         .id(resultSet.getLong("category_id"))
                         .name(resultSet.getString("category_name"))
                         .build();
-                return Product.builder()
+                return Optional.of(Product.builder()
                         .id(resultSet.getLong("id"))
                         .name(resultSet.getString("name"))
                         .category(category)
                         .cost(resultSet.getBigDecimal("cost"))
                         .quantity(resultSet.getInt("quantity"))
-                        .build();
+                        .build());
             }
             statement.close();
         } catch (SQLException | IOException e) {
-            e.printStackTrace();
+            throw new ProductNotFoundException("Failed to find product with id = " + id + e);
         } finally {
             jdbcUtils.closeConnection(connection);
         }
-        return null;
+        return Optional.empty();
     }
 
 
-
     @Override
-    public String findNameById(Long id) {
+    public Optional<String> findNameById(Long id) throws ProductNotFoundException {
         Connection connection = null;
-
         try {
             connection = jdbcUtils.getConnection();
-            PreparedStatement statement = connection.prepareStatement("SELECT NAME FROM PRODUCTS WHERE ID=?");
+            PreparedStatement statement = connection.prepareStatement("SELECT name FROM PRODUCTS WHERE ID=?");
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                return resultSet.getString("name");
+                return Optional.of(resultSet.getString("name"));
             }
             statement.close();
         } catch (SQLException | IOException e) {
-            e.printStackTrace();
+            throw new ProductNotFoundException("Failed to find product name with id = " + id + e);
         } finally {
             jdbcUtils.closeConnection(connection);
         }
-        return null;
+        return Optional.empty();
     }
 
-
     @Override
-    public void insert(Product product) {
+    public void insert(Product product) throws ProductNotFoundException {
         Connection connection = null;
-
         try {
             connection = jdbcUtils.getConnection();
             PreparedStatement statement = connection.prepareStatement("INSERT INTO PRODUCTS (NAME,CATEGORY_ID,COST,QUANTITY) VALUES (?,?,?,?)");
@@ -126,16 +121,15 @@ public class ProductJdbcDao implements ProductDao {
             statement.executeUpdate();
             statement.close();
         } catch (SQLException | IOException e) {
-            e.printStackTrace();
+            throw new ProductNotFoundException("Error while inserting product: " + e.getMessage());
         } finally {
             jdbcUtils.closeConnection(connection);
         }
     }
 
     @Override
-    public void update(Product product) {
+    public void update(Product product) throws ProductNotFoundException {
         Connection connection = null;
-
         try {
             connection = jdbcUtils.getConnection();
             PreparedStatement statement = connection.prepareStatement("UPDATE PRODUCTS SET NAME=?, CATEGORY_ID=? WHERE ID=?");
@@ -146,17 +140,15 @@ public class ProductJdbcDao implements ProductDao {
             statement.executeUpdate();
             statement.close();
         } catch (SQLException | IOException e) {
-            e.printStackTrace();
+            throw new ProductNotFoundException("Error while updating product: " + e.getMessage());
         } finally {
             jdbcUtils.closeConnection(connection);
         }
     }
 
-
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(Long id) throws ProductNotFoundException {
         Connection connection = null;
-
         try {
             connection = jdbcUtils.getConnection();
             PreparedStatement statement = connection.prepareStatement("DELETE FROM PRODUCTS WHERE ID=?");
@@ -164,7 +156,7 @@ public class ProductJdbcDao implements ProductDao {
             statement.executeUpdate();
             statement.close();
         } catch (SQLException | IOException e) {
-            e.printStackTrace();
+            throw new ProductNotFoundException("Error while deleting product: " + e.getMessage());
         } finally {
             jdbcUtils.closeConnection(connection);
         }

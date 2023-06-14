@@ -1,39 +1,44 @@
 package com.shekhovtsov.jdbc.service;
 
-import com.shekhovtsov.jdbc.dao.JdbcUtils;
 import com.shekhovtsov.jdbc.dao.ProductDao;
+import com.shekhovtsov.jdbc.dto.ProductDto;
+import com.shekhovtsov.jdbc.exception.CategoryNotFoundException;
+import com.shekhovtsov.jdbc.exception.ProductNotFoundException;
+import com.shekhovtsov.jdbc.model.Category;
 import com.shekhovtsov.jdbc.model.Product;
-
 import java.util.List;
+import java.util.Optional;
 
 public class ProductServiceImpl implements ProductService{
 
-    private JdbcUtils jdbcUtils;
     private ProductDao productJdbcDao;
+    private CategoryService categoryService;
 
-    public ProductServiceImpl(JdbcUtils jdbcUtils, ProductDao productJdbcDao) {
-        this.jdbcUtils = jdbcUtils;
+    public ProductServiceImpl(ProductDao productJdbcDao) {
         this.productJdbcDao = productJdbcDao;
     }
 
     @Override
-    public List<Product> findAll() {
+    public List<Product> findAll() throws ProductNotFoundException {
         return productJdbcDao.findAll();
     }
 
     @Override
-    public Product findById(Long id) {
+    public Optional<Product> findById(Long id) throws ProductNotFoundException {
         return productJdbcDao.findById(id);
     }
 
     @Override
-    public String findNameById(Long id) {
+    public Optional<String> findNameById(Long id) throws ProductNotFoundException {
         return productJdbcDao.findNameById(id);
     }
 
     @Override
-    public void insert(Product product) {
-        productJdbcDao.insert(product);
+    public void insert(ProductDto productDto) throws CategoryNotFoundException {
+        Category category = categoryService.findById(productDto.getCategory());
+
+
+        productJdbcDao.insert(new Product(null,productDto.getName(),category,productDto.getCost(), productDto.getQuantity()));
     }
 
     @Override

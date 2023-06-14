@@ -1,5 +1,6 @@
 package com.shekhovtsov.jdbc.controller;
 
+import com.shekhovtsov.jdbc.dto.ProductDto;
 import com.shekhovtsov.jdbc.model.Category;
 import com.shekhovtsov.jdbc.model.Product;
 import com.shekhovtsov.jdbc.service.ProductService;
@@ -22,9 +23,9 @@ public class UserCommands {
                 .name("Новая")
                 .build();
 
-        Product product = Product.builder()
+        ProductDto productDto = ProductDto.builder()
                 .name("Product")
-                .category(category)
+                .category(1L)
                 .cost(BigDecimal.valueOf(100))
                 .quantity(100)
                 .build();
@@ -75,7 +76,7 @@ public class UserCommands {
                     break;
                 case "4":
                     System.out.println("Добавление нового товара: ");
-                    productService.insert(product);
+                    productService.insert(productDto);
                     System.out.println("Добавлен");
                     break;
                 case "5":

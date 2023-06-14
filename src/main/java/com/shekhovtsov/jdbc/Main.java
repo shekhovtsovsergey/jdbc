@@ -20,9 +20,8 @@ public class Main {
         DataSource dataSource = jdbcUtils.getDataSource();
         Flyway flyway = Flyway.configure().dataSource(dataSource).load();
         flyway.migrate();
-        ProductService productService = new ProductServiceImpl(jdbcUtils, productDao);
+        ProductService productService = new ProductServiceImpl(productDao);
         UserCommands userCommands = new UserCommands(productService);
         userCommands.play();
-
     }
 }

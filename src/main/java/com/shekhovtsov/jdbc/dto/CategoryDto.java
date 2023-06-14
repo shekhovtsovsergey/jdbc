@@ -1,16 +1,13 @@
-package com.shekhovtsov.jdbc.model;
-
+package com.shekhovtsov.jdbc.dto;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
-@ToString
 @Getter
 @Setter
 @Builder
-public class Category {
+public class CategoryDto {
     private Long id;
     private String name;
 }
