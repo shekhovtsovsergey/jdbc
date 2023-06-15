@@ -51,9 +51,9 @@ public class ProductJdbcDao implements ProductDao {
         } finally {
             jdbcUtils.closeConnection(connection);
         }
-        if (result.isEmpty()) {
-            throw new ProductNotFoundException("No products found");
-        }
+//        if (result.isEmpty()) {
+//            throw new ProductNotFoundException("No products found");
+//        }
         return result;
     }
 
@@ -90,9 +90,8 @@ public class ProductJdbcDao implements ProductDao {
 
     @Override
     public Optional<String> findNameById(Long id) throws ProductNotFoundException {
-        Connection connection = null;
-        try {
-            connection = jdbcUtils.getConnection();
+
+        try (Connection connection = jdbcUtils.getConnection()) {
             PreparedStatement statement = connection.prepareStatement("SELECT name FROM PRODUCTS WHERE ID=?");
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
@@ -102,11 +101,11 @@ public class ProductJdbcDao implements ProductDao {
             statement.close();
         } catch (SQLException | IOException e) {
             throw new ProductNotFoundException("Failed to find product name with id = " + id + e);
-        } finally {
-            jdbcUtils.closeConnection(connection);
         }
         return Optional.empty();
     }
+
+
 
     @Override
     public void insert(Product product) throws ProductNotFoundException {

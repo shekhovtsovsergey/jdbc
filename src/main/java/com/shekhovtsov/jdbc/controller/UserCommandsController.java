@@ -5,10 +5,7 @@ import com.shekhovtsov.jdbc.exception.CategoryNotFoundException;
 import com.shekhovtsov.jdbc.exception.ProductNotFoundException;
 import com.shekhovtsov.jdbc.service.ProductService;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;

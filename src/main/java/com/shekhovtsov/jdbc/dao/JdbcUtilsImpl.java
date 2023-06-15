@@ -10,6 +10,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+//пулл коннектов
+//jdbc.properties выносить в константы
+
 public class JdbcUtilsImpl implements JdbcUtils{
 
     @Override
@@ -18,6 +21,7 @@ public class JdbcUtilsImpl implements JdbcUtils{
         Properties props = new Properties();
         props.load(input);
         return DriverManager.getConnection(props.getProperty("url"), props);
+        //закрыть инпут стрим
     }
 
     @Override
