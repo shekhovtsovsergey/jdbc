@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class CategoryJdbcDao implements CategoryDao {
+public class CategoryJdbcDao implements CategoryDao<Category> {
 
     private JdbcUtils jdbcUtils;
 

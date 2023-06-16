@@ -26,7 +26,7 @@ public class ProductConverter {
                 .build();
     }
 
-    public Product dtoToEntity(ProductDto productDto) throws CategoryNotFoundException {
+    public Product dtoToEntity(ProductDto productDto) throws Throwable {
         Category category = categoryService.findById(productDto.getCategory());
         return Product.builder()
                 .id(productDto.getId())

@@ -2,8 +2,8 @@ package com.shekhovtsov.jdbc.service;
 
 import com.shekhovtsov.jdbc.converter.ProductConverter;
 import com.shekhovtsov.jdbc.dao.ProductDao;
+import com.shekhovtsov.jdbc.dao.ProductDaoDto;
 import com.shekhovtsov.jdbc.dto.ProductDto;
-import com.shekhovtsov.jdbc.exception.CategoryNotFoundException;
 import com.shekhovtsov.jdbc.exception.ProductNotFoundException;
 import com.shekhovtsov.jdbc.model.Category;
 import com.shekhovtsov.jdbc.model.Product;
@@ -14,17 +14,27 @@ import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
 
     private ProductDao productDao;
     private CategoryService categoryService;
     private ProductConverter productConverter;
+    private ProductDaoDto productDaoDto;
 
-    public ProductServiceImpl(ProductDao productDao, CategoryService categoryService, ProductConverter productConverter) {
+
+    public ProductServiceImpl(ProductDao productDao, CategoryService categoryService, ProductConverter productConverter, ProductDaoDto productDaoDto) {
         this.productDao = productDao;
         this.categoryService = categoryService;
         this.productConverter = productConverter;
+        this.productDaoDto = productDaoDto;
     }
+
+    @Override
+    public List<ProductDto> findAllProducts() throws ProductNotFoundException {
+        return productDaoDto.findAllProducts();
+    }
+
+
 
     @Override
     public List<ProductDto> findAll() throws ProductNotFoundException {
@@ -58,7 +68,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public void insert(ProductDto productDto) throws CategoryNotFoundException, ProductNotFoundException {
+    public void insert(ProductDto productDto) throws Throwable {
         Category category = categoryService.findById(productDto.getCategory());
         productDao.insert(
                 Product.builder()
@@ -71,7 +81,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public void update(ProductDto productDto) throws ProductNotFoundException, CategoryNotFoundException {
+    public void update(ProductDto productDto) throws Throwable {
         Product product = productConverter.dtoToEntity(productDto);
         productDao.update(product);
     }

@@ -21,12 +21,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category findById(Long id) throws CategoryNotFoundException {
-        return categoryDao.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
+    public Category findById(Long id) throws Throwable {
+        return (Category) categoryDao.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
     }
 
     @Override
-    public Optional<Category> findNameById(Long id) throws CategoryNotFoundException {
+    public Optional<Category> findNameById(Long id) throws Throwable {
         return (Optional<Category>) categoryDao.findNameById(id).orElseThrow(() -> new CategoryNotFoundException(id));
     }
 

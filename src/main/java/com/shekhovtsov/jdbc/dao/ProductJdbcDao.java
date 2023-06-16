@@ -17,9 +17,11 @@ import java.util.Optional;
 public class ProductJdbcDao implements ProductDao {
 
     private JdbcUtils jdbcUtils;
+    private ConnectionManager connectionManager;
 
-    public ProductJdbcDao(JdbcUtils jdbcUtils) {
+    public ProductJdbcDao(JdbcUtils jdbcUtils,ConnectionManager connectionManager) {
         this.jdbcUtils = jdbcUtils;
+        this.connectionManager = connectionManager;
     }
 
     @Override
@@ -27,7 +29,7 @@ public class ProductJdbcDao implements ProductDao {
         Connection connection = null;
         List<Product> result = new ArrayList<>();
         try {
-            connection = jdbcUtils.getConnection();
+            connection = ConnectionManagerImpl.getInstance().getConnection();
             PreparedStatement statement = connection.prepareStatement("SELECT p.*, c.NAME as CATEGORY_NAME, c.ID as CATEGORY_ID FROM PRODUCTS p LEFT JOIN CATEGORIES c ON p.CATEGORY_ID = c.ID");
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -45,15 +47,10 @@ public class ProductJdbcDao implements ProductDao {
                 result.add(product);
             }
             statement.close();
-
-        } catch (SQLException | IOException e) {
+            ConnectionManagerImpl.getInstance().releaseConnection(connection);
+        } catch (SQLException e) {
             throw new ProductNotFoundException("Failed to find products" + e);
-        } finally {
-            jdbcUtils.closeConnection(connection);
         }
-//        if (result.isEmpty()) {
-//            throw new ProductNotFoundException("No products found");
-//        }
         return result;
     }
 

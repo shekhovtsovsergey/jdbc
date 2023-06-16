@@ -18,7 +18,7 @@ public class UserCommandsController {
         this.productService = productService;
     }
 
-    public void play() {
+    public void play() throws Throwable {
         System.out.println("Здравствуйте, добро пожаловать в интернет магазин");
         Scanner scanner = new Scanner(System.in);
         String command = "";
@@ -70,7 +70,7 @@ public class UserCommandsController {
 
         private void showAllProducts () throws ProductNotFoundException {
             System.out.println("Список всех товаров: ");
-            List<ProductDto> products = productService.findAll();
+            List<ProductDto> products = productService.findAllProducts();
             for (ProductDto p : products) {
                 System.out.println(p);
             }
@@ -94,7 +94,7 @@ public class UserCommandsController {
             System.out.println(productName);
         }
 
-        private void addNewProduct () throws CategoryNotFoundException, ProductNotFoundException {
+        private void addNewProduct () throws Throwable {
             System.out.println("Добавление нового товара: ");
             System.out.println("Введите название товара: ");
             Scanner scanner = new Scanner(System.in);
@@ -116,7 +116,7 @@ public class UserCommandsController {
             scanner.nextLine();
         }
 
-        private void updateProduct () throws ProductNotFoundException, CategoryNotFoundException {
+        private void updateProduct () throws Throwable {
             System.out.println("Обновление товара");
             System.out.println("Введите ID товара, который хотите обновить:");
             Scanner scanner = new Scanner(System.in);

@@ -10,10 +10,11 @@ import java.util.Optional;
 
 public interface ProductService {
 
+    List<ProductDto> findAllProducts() throws ProductNotFoundException;
     List<ProductDto> findAll() throws ProductNotFoundException;
     ProductDto findById(Long id) throws ProductNotFoundException;
     Optional<String> findNameById(Long id) throws ProductNotFoundException;
-    void insert(ProductDto productDto) throws CategoryNotFoundException, ProductNotFoundException;
-    void update(ProductDto productDto) throws ProductNotFoundException, CategoryNotFoundException;
+    void insert(ProductDto productDto) throws Throwable;
+    void update(ProductDto productDto) throws Throwable;
     void deleteById(Long id) throws ProductNotFoundException;
 }
