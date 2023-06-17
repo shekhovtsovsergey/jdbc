@@ -70,7 +70,7 @@ public class UserCommandsController {
 
         private void showAllProducts () throws ProductNotFoundException {
             System.out.println("Список всех товаров: ");
-            List<ProductDto> products = productService.findAllProducts();
+            List<ProductDto> products = productService.findAll();
             for (ProductDto p : products) {
                 System.out.println(p);
             }

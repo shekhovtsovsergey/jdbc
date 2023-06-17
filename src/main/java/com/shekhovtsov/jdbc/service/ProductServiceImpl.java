@@ -2,7 +2,6 @@ package com.shekhovtsov.jdbc.service;
 
 import com.shekhovtsov.jdbc.converter.ProductConverter;
 import com.shekhovtsov.jdbc.dao.ProductDao;
-import com.shekhovtsov.jdbc.dao.ProductDaoDto;
 import com.shekhovtsov.jdbc.dto.ProductDto;
 import com.shekhovtsov.jdbc.exception.ProductNotFoundException;
 import com.shekhovtsov.jdbc.model.Category;
@@ -19,21 +18,13 @@ public class ProductServiceImpl implements ProductService {
     private ProductDao productDao;
     private CategoryService categoryService;
     private ProductConverter productConverter;
-    private ProductDaoDto productDaoDto;
 
 
-    public ProductServiceImpl(ProductDao productDao, CategoryService categoryService, ProductConverter productConverter, ProductDaoDto productDaoDto) {
+    public ProductServiceImpl(ProductDao productDao, CategoryService categoryService, ProductConverter productConverter) {
         this.productDao = productDao;
         this.categoryService = categoryService;
         this.productConverter = productConverter;
-        this.productDaoDto = productDaoDto;
     }
-
-    @Override
-    public List<ProductDto> findAllProducts() throws ProductNotFoundException {
-        return productDaoDto.findAllProducts();
-    }
-
 
 
     @Override

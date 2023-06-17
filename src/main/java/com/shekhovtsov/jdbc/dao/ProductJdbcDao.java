@@ -1,5 +1,7 @@
 package com.shekhovtsov.jdbc.dao;
 
+import com.shekhovtsov.jdbc.dao.connection.ConnectionManager;
+import com.shekhovtsov.jdbc.dao.connection.ConnectionManagerImpl;
 import com.shekhovtsov.jdbc.exception.ProductNotFoundException;
 import com.shekhovtsov.jdbc.model.Category;
 import com.shekhovtsov.jdbc.model.Product;
@@ -25,7 +27,7 @@ public class ProductJdbcDao implements ProductDao {
     }
 
     @Override
-    public List<Product> findAll() throws ProductNotFoundException {
+    public List<Product> findAll() throws ProductNotFoundException, SQLException {
         Connection connection = null;
         List<Product> result = new ArrayList<>();
         try {
@@ -47,12 +49,70 @@ public class ProductJdbcDao implements ProductDao {
                 result.add(product);
             }
             statement.close();
-            ConnectionManagerImpl.getInstance().releaseConnection(connection);
         } catch (SQLException e) {
             throw new ProductNotFoundException("Failed to find products" + e);
+        } finally {
+            ConnectionManagerImpl.getInstance().releaseConnection(connection);
         }
         return result;
     }
+
+//
+//    public List<Product> findAllExecute() throws Exception {
+//
+//        ConnectionManagerImpl.getInstance().execute(()->{
+//
+//            PreparedStatement statement = connection.prepareStatement("SELECT p.*, c.NAME as CATEGORY_NAME, c.ID as CATEGORY_ID FROM PRODUCTS p LEFT JOIN CATEGORIES c ON p.CATEGORY_ID = c.ID");
+//            ResultSet resultSet = statement.executeQuery();
+//            while (resultSet.next()) {
+//                Category category = Category.builder()
+//                        .id(resultSet.getLong("CATEGORY_ID"))
+//                        .name(resultSet.getString("CATEGORY_NAME"))
+//                        .build();
+//                Product product = Product.builder()
+//                        .id(resultSet.getLong("id"))
+//                        .name(resultSet.getString("name"))
+//                        .category(category != null && category.getId() != null ? category : null)
+//                        .cost(resultSet.getBigDecimal("cost"))
+//                        .quantity(resultSet.getInt("quantity"))
+//                        .build();
+//                result.add(product);
+//            }
+//            statement.close();
+//
+//            return null;
+//        });
+//
+
+        Connection connection = null;
+        List<Product> result = new ArrayList<>();
+        try {
+            connection = ConnectionManagerImpl.getInstance().getConnection();
+            PreparedStatement statement = connection.prepareStatement("SELECT p.*, c.NAME as CATEGORY_NAME, c.ID as CATEGORY_ID FROM PRODUCTS p LEFT JOIN CATEGORIES c ON p.CATEGORY_ID = c.ID");
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Category category = Category.builder()
+                        .id(resultSet.getLong("CATEGORY_ID"))
+                        .name(resultSet.getString("CATEGORY_NAME"))
+                        .build();
+                Product product = Product.builder()
+                        .id(resultSet.getLong("id"))
+                        .name(resultSet.getString("name"))
+                        .category(category != null && category.getId() != null ? category : null)
+                        .cost(resultSet.getBigDecimal("cost"))
+                        .quantity(resultSet.getInt("quantity"))
+                        .build();
+                result.add(product);
+            }
+            statement.close();
+        } catch (SQLException e) {
+            throw new ProductNotFoundException("Failed to find products" + e);
+        } finally {
+            ConnectionManagerImpl.getInstance().releaseConnection(connection);
+        }
+        return result;
+    }
+
 
     @Override
     public Optional<Product> findById(Long id) throws ProductNotFoundException {

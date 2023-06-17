@@ -10,7 +10,6 @@ import java.util.Optional;
 
 public interface ProductService {
 
-    List<ProductDto> findAllProducts() throws ProductNotFoundException;
     List<ProductDto> findAll() throws ProductNotFoundException;
     ProductDto findById(Long id) throws ProductNotFoundException;
     Optional<String> findNameById(Long id) throws ProductNotFoundException;

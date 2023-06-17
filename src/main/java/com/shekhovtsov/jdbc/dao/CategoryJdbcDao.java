@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class CategoryJdbcDao implements CategoryDao<Category> {
+public class CategoryJdbcDao implements CategoryDao {
 
     private JdbcUtils jdbcUtils;
 
@@ -20,6 +20,7 @@ public class CategoryJdbcDao implements CategoryDao<Category> {
         this.jdbcUtils = jdbcUtils;
     }
 
+    //этот код будет один для любого набора сущьностей
     @Override
     public List<Category> findAll() throws CategoryNotFoundException {
         Connection connection = null;
