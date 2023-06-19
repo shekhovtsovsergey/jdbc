@@ -1,0 +1,13 @@
+CREATE TABLE CATEGORIES (
+                            ID BIGSERIAL PRIMARY KEY,
+                            NAME VARCHAR(255) UNIQUE
+);
+
+CREATE TABLE PRODUCTS
+(
+    ID             BIGSERIAL        PRIMARY KEY,
+    NAME           VARCHAR(255)     NOT NULL,
+    CATEGORY_ID    BIGINT           NOT NULL REFERENCES CATEGORIES(ID),
+    COST           NUMERIC(10, 2)   NOT NULL,
+    QUANTITY       INTEGER          NOT NULL
+);
